@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 
 import me.aren.gbjam.interfaces.IGameObject;
 import me.aren.gbjam.util.GameObjectHandler;
+import me.aren.gbjam.util.ScoreHandler;
 
 public class Spaceship implements IGameObject {
 	private final String SPR_SPACESHIP_PATH         = "sprites/spaceship.png";
@@ -23,6 +24,7 @@ public class Spaceship implements IGameObject {
 	private Sound sndShoot;
 	
 	private GameObjectHandler objHandler;
+	private ScoreHandler scoreHandler;
 	
 	private Vector2 pos;
 	private float speed = 100f;
@@ -31,7 +33,8 @@ public class Spaceship implements IGameObject {
 	private long time = 0;
 	boolean canShoot = true;
 	
-	public Spaceship(GameObjectHandler objHandler) {
+	public Spaceship(GameObjectHandler objHandler, ScoreHandler scoreHandler) {
+		this.scoreHandler = scoreHandler;
 		// TODO Auto-generated constructor stub
 		texSpaceship 		= new Texture(Gdx.files.internal(SPR_SPACESHIP_PATH));
 		texSpaceshipPowered = new Texture(Gdx.files.internal(SPR_SPACESHIP_POWERED_PATH));
@@ -39,6 +42,7 @@ public class Spaceship implements IGameObject {
 		sndShoot			= Gdx.audio.newSound(Gdx.files.internal(SND_SHOOT));
 		this.objHandler 	= objHandler;
 		pos					= new Vector2((160 / 2) - 8, 4);
+		objHandler.addObject(this);
 	}
 	
 	public void cooldown() {
@@ -61,9 +65,10 @@ public class Spaceship implements IGameObject {
 		}
 		
 		if(Gdx.input.isKeyJustPressed(Keys.Z) && canShoot) {
-			objHandler.addObject(new Bullet(new Vector2(pos.x + 4, pos.y + 10), objHandler));
+			new Bullet(new Vector2(pos.x + 4, pos.y + 10), objHandler);
 			lastShoot = System.currentTimeMillis();
 			canShoot = false;
+			scoreHandler.incrementScore(1);
 			sndShoot.play();
 		}
 		if(Gdx.input.isKeyJustPressed(Keys.Z) && !canShoot && time - lastShoot > 100) {

@@ -23,6 +23,7 @@ public class Bullet implements IGameObject {
 		this.objHandler = objHandler;
 		
 		texBullet = new Texture(Gdx.files.internal(SPR_BULLET));
+		objHandler.addObject(this);
 	}
 
 	@Override

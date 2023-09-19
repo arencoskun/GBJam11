@@ -1,7 +1,5 @@
 package me.aren.gbjam.screens;
 
-import java.util.LinkedList;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
@@ -14,10 +12,10 @@ import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import me.aren.gbjam.GBJamGame;
-import me.aren.gbjam.interfaces.IGameObject;
-import me.aren.gbjam.objects.Bullet;
-import me.aren.gbjam.objects.Spaceship;
+import me.aren.gbjam.enums.AsteroidType;
+import me.aren.gbjam.objects.*;
 import me.aren.gbjam.util.GameObjectHandler;
+import me.aren.gbjam.util.ScoreHandler;
 
 public class GameScreen implements Screen {
 	
@@ -27,20 +25,18 @@ public class GameScreen implements Screen {
 	private final int SCALING_FACTOR_VIEWPORT                 = 4;
 	private final Color[] GB_COLOR_PALETTE                    = new Color[4];
 	private final String SPR_TILE_BLACK_PATH				  = "sprites/tile_black.png";
-	private final String SPR_STAR_1_PATH 					  = "sprites/star_1.png";
-	private final String SPR_STAR_2_PATH					  = "sprites/star_2.png";
 	private final String SPR_ALIEN_HAPPY					  = "sprites/alien_happy.png";
 	private final String SPR_ALIEN_NEUTRAL					  = "sprites/alien_neutral.png";
 	private final String SPR_ALIEN_NOFACE					  = "sprites/alien_noface.png";
 	private final String SPR_ALIEN_PATTERN					  = "sprites/alien_pattern.png";
 	private final String SPR_ALIEN_SAD						  = "sprites/alien_sad.png";
-	private final String SPR_ASTEROID_TINY					  = "sprites/asteroid_tiny.png";
-	private final String SPR_ASTEROID_MEDIUM				  = "sprites/asteroid_medium.png";
-	private final String SPR_ASTEROID_LARGE					  = "sprites/asteroid_large.png";
+
+	private final int STAR_AMOUNT = 14;
 	
 	private Texture texTileBlack;
 	
 	private GameObjectHandler objHandler;
+	private ScoreHandler scoreHandler;
 	private Spaceship spaceship;
 	
 	GBJamGame game;
@@ -53,17 +49,24 @@ public class GameScreen implements Screen {
 		viewport 			= new StretchViewport(GB_SCREEN_WIDTH*SCALING_FACTOR_VIEWPORT, GB_SCREEN_HEIGHT*SCALING_FACTOR_VIEWPORT, cam);
 		cam.setToOrtho(false, GB_SCREEN_WIDTH, GB_SCREEN_HEIGHT);
 		
-		GB_COLOR_PALETTE[0] = new Color(255f/255f, 156f/255f, 0f/255f, 1f); // Orange
+		GB_COLOR_PALETTE[0] = new Color(1f, 156f/255f, 0f/255f, 1f); // Orange
 		GB_COLOR_PALETTE[1] = new Color(162f/255f, 162f/255f, 162f/255f, 1f); // Lightest Gray
 		GB_COLOR_PALETTE[2] = new Color(121f/255f, 121f/255f, 121f/255f, 1f); // Gray
 		GB_COLOR_PALETTE[3] = new Color(30f/255f, 27f/255f, 27f/255f, 1f); // Black
 		
 		texTileBlack 		= new Texture(Gdx.files.internal(SPR_TILE_BLACK_PATH));
-		
+
 		objHandler			= new GameObjectHandler();
-		spaceship 			= new Spaceship(objHandler);
-		
-		objHandler.addObject(spaceship);
+		scoreHandler		= new ScoreHandler();
+
+		for(int i = 0; i < STAR_AMOUNT; i++) {
+			new Star(objHandler);
+		}
+		spaceship 			= new Spaceship(objHandler, scoreHandler);
+		Asteroid rockTiny	= new Asteroid(objHandler, AsteroidType.TINY, new Vector2(10, 144));
+		Asteroid rockMedium	= new Asteroid(objHandler, AsteroidType.MEDIUM, new Vector2(50, 144));
+		Asteroid rockLarge	= new Asteroid(objHandler, AsteroidType.LARGE, new Vector2(100, 144));
+		ScoreText scoreText = new ScoreText(objHandler, scoreHandler);
 		
 		this.game 			= game;
 		this.sb 			= game.sb;
