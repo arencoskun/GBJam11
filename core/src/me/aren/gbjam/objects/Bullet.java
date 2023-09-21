@@ -3,6 +3,7 @@ package me.aren.gbjam.objects;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 import me.aren.gbjam.interfaces.IGameObject;
@@ -16,6 +17,7 @@ public class Bullet implements IGameObject {
 	private GameObjectHandler objHandler;
 	private Texture texBullet;
 	private Vector2 pos;
+	private Rectangle hitbox;
 	
 	public Bullet(Vector2 pos, GameObjectHandler objHandler) {
 		// TODO Auto-generated constructor stub
@@ -23,12 +25,14 @@ public class Bullet implements IGameObject {
 		this.objHandler = objHandler;
 		
 		texBullet = new Texture(Gdx.files.internal(SPR_BULLET));
-		objHandler.addObject(this);
+		hitbox = new Rectangle(pos.x, pos.y, texBullet.getWidth(), texBullet.getHeight());
+		objHandler.addBullet(this);
 	}
 
 	@Override
 	public void update(float delta) {
 		// TODO Auto-generated method stub
+		if(hitbox.getX() != pos.x || hitbox.getY() != pos.y) hitbox.setPosition(pos);
 		if(pos.y > 150) {
 			dispose();
 		}
@@ -47,6 +51,10 @@ public class Bullet implements IGameObject {
 		// TODO Auto-generated method stub
 		texBullet.dispose();
 		objHandler.removeObject(this);
+	}
+
+	public Rectangle getHitbox() {
+		return hitbox;
 	}
 
 }

@@ -62,11 +62,10 @@ public class GameScreen implements Screen {
 		for(int i = 0; i < STAR_AMOUNT; i++) {
 			new Star(objHandler);
 		}
-		spaceship 			= new Spaceship(objHandler, scoreHandler);
-		Asteroid rockTiny	= new Asteroid(objHandler, AsteroidType.TINY, new Vector2(10, 144));
-		Asteroid rockMedium	= new Asteroid(objHandler, AsteroidType.MEDIUM, new Vector2(50, 144));
-		Asteroid rockLarge	= new Asteroid(objHandler, AsteroidType.LARGE, new Vector2(100, 144));
+		spaceship 			= new Spaceship(objHandler);
+		// TODO: Move these up
 		ScoreText scoreText = new ScoreText(objHandler, scoreHandler);
+		AsteroidSpawner spawner	= new AsteroidSpawner(objHandler, scoreHandler);
 		
 		this.game 			= game;
 		this.sb 			= game.sb;

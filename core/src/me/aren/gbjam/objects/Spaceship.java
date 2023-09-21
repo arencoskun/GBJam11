@@ -33,7 +33,7 @@ public class Spaceship implements IGameObject {
 	private long time = 0;
 	boolean canShoot = true;
 	
-	public Spaceship(GameObjectHandler objHandler, ScoreHandler scoreHandler) {
+	public Spaceship(GameObjectHandler objHandler) {
 		this.scoreHandler = scoreHandler;
 		// TODO Auto-generated constructor stub
 		texSpaceship 		= new Texture(Gdx.files.internal(SPR_SPACESHIP_PATH));
@@ -45,7 +45,7 @@ public class Spaceship implements IGameObject {
 		objHandler.addObject(this);
 	}
 	
-	public void cooldown() {
+	private void cooldown() {
 	    time = System.currentTimeMillis();
 	    if (time > lastShoot + shootCooldown) {
 	        canShoot = true;
@@ -68,7 +68,6 @@ public class Spaceship implements IGameObject {
 			new Bullet(new Vector2(pos.x + 4, pos.y + 10), objHandler);
 			lastShoot = System.currentTimeMillis();
 			canShoot = false;
-			scoreHandler.incrementScore(1);
 			sndShoot.play();
 		}
 		if(Gdx.input.isKeyJustPressed(Keys.Z) && !canShoot && time - lastShoot > 100) {
