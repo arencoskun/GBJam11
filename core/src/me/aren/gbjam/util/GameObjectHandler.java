@@ -8,11 +8,13 @@ import com.badlogic.gdx.math.Rectangle;
 import me.aren.gbjam.interfaces.IGameObject;
 import me.aren.gbjam.objects.Asteroid;
 import me.aren.gbjam.objects.Bullet;
+import me.aren.gbjam.objects.tutorial.TutorialAsteroid;
 
 public class GameObjectHandler {
 	private LinkedBlockingQueue<IGameObject> gameObjects;
 	private LinkedBlockingQueue<Bullet> bullets;
 	private LinkedBlockingQueue<Asteroid> asteroids;
+	private boolean pause = false;
 	
 	public GameObjectHandler() {
 		gameObjects = new LinkedBlockingQueue<IGameObject>();
@@ -33,7 +35,6 @@ public class GameObjectHandler {
 		asteroids.add(asteroid);
 		System.out.println("Added asteroid");
 	}
-
 	
 	public void removeObject(IGameObject obj) {
 		gameObjects.remove(obj);
@@ -69,8 +70,10 @@ public class GameObjectHandler {
 	}
 	
 	public void updateObjects(float delta) {
-		for(IGameObject gameObject : gameObjects) {
-			gameObject.update(delta);
+		if(!pause) {
+			for (IGameObject gameObject : gameObjects) {
+				gameObject.update(delta);
+			}
 		}
 	}
 	
@@ -84,5 +87,23 @@ public class GameObjectHandler {
 		for(IGameObject gameObject : gameObjects) {
 			gameObject.dispose();
 		}
+	}
+
+	public void removeAllObjects() {
+		for(IGameObject gameObject : gameObjects) {
+			removeObject(gameObject);
+		}
+
+		for(Asteroid asteroid : asteroids) {
+			removeAsteroid(asteroid);
+		}
+
+		for(Bullet bullet : bullets) {
+			removeBullet(bullet);
+		}
+	}
+
+	public void setPause(boolean pause) {
+		this.pause = pause;
 	}
 }

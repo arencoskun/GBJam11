@@ -122,7 +122,9 @@ public class Asteroid implements IGameObject {
                     break;
             }
             objectHandler.removeBullet(collision);
-            scoreHandler.incrementScore(1);
+            if(!collision.isEnemy()) {
+                scoreHandler.incrementScore(1);
+            }
         }
     }
 

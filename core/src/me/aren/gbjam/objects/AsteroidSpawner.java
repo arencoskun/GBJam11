@@ -61,6 +61,6 @@ public class AsteroidSpawner implements IGameObject {
 
     @Override
     public void dispose() {
-
+        objectHandler.removeObject(this);
     }
 }

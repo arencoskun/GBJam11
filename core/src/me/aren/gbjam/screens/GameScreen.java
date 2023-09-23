@@ -6,18 +6,17 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import me.aren.gbjam.GBJamGame;
-import me.aren.gbjam.enums.AsteroidType;
 import me.aren.gbjam.objects.*;
 import me.aren.gbjam.util.GameObjectHandler;
 import me.aren.gbjam.util.GameStateHandler;
 import me.aren.gbjam.util.ScoreHandler;
+import me.aren.gbjam.util.cam.Rumble;
 
 public class GameScreen implements Screen {
 	
@@ -63,11 +62,11 @@ public class GameScreen implements Screen {
 		}
 
 		spaceship 			= new Spaceship(objHandler, gameStateHandler);
-
-		new Alien(objHandler, new Vector2(100, 100));
 		// TODO: Move these up
 		ScoreText scoreText = new ScoreText(objHandler, scoreHandler);
 		AsteroidSpawner spawner	= new AsteroidSpawner(objHandler, scoreHandler);
+		AlienSpawner alienSpawner = new AlienSpawner(objHandler);
+		LivesBar livesBar = new LivesBar(objHandler, gameStateHandler);
 		
 		this.game 			= game;
 		this.sb 			= game.sb;
@@ -98,13 +97,20 @@ public class GameScreen implements Screen {
 		update(delta);
 		cam.update();
 		sb.setProjectionMatrix(cam.combined);
-		ScreenUtils.clear(0, 0, 0, 1);
+		ScreenUtils.clear(GB_COLOR_PALETTE[3]);
 		sb.begin();
 
 
 		drawBg();
 		
 		objHandler.drawObjects(sb);
+		if (Rumble.getRumbleTimeLeft() > 0){
+			Rumble.tick(Gdx.graphics.getDeltaTime());
+			cam.translate(Rumble.getPos());
+		} else {
+			cam.position.x = 80;
+			cam.position.y = 72;
+		}
 		sb.end();
 	}
 

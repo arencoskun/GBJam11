@@ -36,7 +36,7 @@ public class Bullet implements IGameObject {
 	public void update(float delta) {
 		// TODO Auto-generated method stub
 		if(hitbox.getX() != pos.x || hitbox.getY() != pos.y) hitbox.setPosition(pos);
-		if(pos.y > 150 || pos.y <= 0) {
+		if(pos.y > 150 || pos.y <= -5) {
 			dispose();
 		}
 
@@ -62,4 +62,7 @@ public class Bullet implements IGameObject {
 		return hitbox;
 	}
 
+	public boolean isEnemy() {
+		return enemy;
+	}
 }
