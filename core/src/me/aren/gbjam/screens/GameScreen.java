@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
@@ -15,6 +16,7 @@ import me.aren.gbjam.GBJamGame;
 import me.aren.gbjam.enums.AsteroidType;
 import me.aren.gbjam.objects.*;
 import me.aren.gbjam.util.GameObjectHandler;
+import me.aren.gbjam.util.GameStateHandler;
 import me.aren.gbjam.util.ScoreHandler;
 
 public class GameScreen implements Screen {
@@ -25,11 +27,6 @@ public class GameScreen implements Screen {
 	private final int SCALING_FACTOR_VIEWPORT                 = 4;
 	private final Color[] GB_COLOR_PALETTE                    = new Color[4];
 	private final String SPR_TILE_BLACK_PATH				  = "sprites/tile_black.png";
-	private final String SPR_ALIEN_HAPPY					  = "sprites/alien_happy.png";
-	private final String SPR_ALIEN_NEUTRAL					  = "sprites/alien_neutral.png";
-	private final String SPR_ALIEN_NOFACE					  = "sprites/alien_noface.png";
-	private final String SPR_ALIEN_PATTERN					  = "sprites/alien_pattern.png";
-	private final String SPR_ALIEN_SAD						  = "sprites/alien_sad.png";
 
 	private final int STAR_AMOUNT = 14;
 	
@@ -37,13 +34,14 @@ public class GameScreen implements Screen {
 	
 	private GameObjectHandler objHandler;
 	private ScoreHandler scoreHandler;
+	private GameStateHandler gameStateHandler;
 	private Spaceship spaceship;
 	
 	GBJamGame game;
 	SpriteBatch sb;
 	Viewport viewport;
 	OrthographicCamera cam;
-	
+
 	public GameScreen(GBJamGame game) {
 		cam 				= new OrthographicCamera();
 		viewport 			= new StretchViewport(GB_SCREEN_WIDTH*SCALING_FACTOR_VIEWPORT, GB_SCREEN_HEIGHT*SCALING_FACTOR_VIEWPORT, cam);
@@ -58,11 +56,15 @@ public class GameScreen implements Screen {
 
 		objHandler			= new GameObjectHandler();
 		scoreHandler		= new ScoreHandler();
+		gameStateHandler    = new GameStateHandler(game);
 
 		for(int i = 0; i < STAR_AMOUNT; i++) {
 			new Star(objHandler);
 		}
-		spaceship 			= new Spaceship(objHandler);
+
+		spaceship 			= new Spaceship(objHandler, gameStateHandler);
+
+		new Alien(objHandler, new Vector2(100, 100));
 		// TODO: Move these up
 		ScoreText scoreText = new ScoreText(objHandler, scoreHandler);
 		AsteroidSpawner spawner	= new AsteroidSpawner(objHandler, scoreHandler);
@@ -99,10 +101,10 @@ public class GameScreen implements Screen {
 		ScreenUtils.clear(0, 0, 0, 1);
 		sb.begin();
 
+
 		drawBg();
 		
 		objHandler.drawObjects(sb);
-		
 		sb.end();
 	}
 

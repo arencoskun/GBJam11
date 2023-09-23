@@ -1,6 +1,7 @@
 package me.aren.gbjam.objects;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import me.aren.gbjam.enums.AsteroidType;
 import me.aren.gbjam.interfaces.IGameObject;

@@ -1,8 +1,10 @@
 package me.aren.gbjam.objects;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import me.aren.gbjam.enums.AsteroidType;
@@ -16,6 +18,7 @@ public class Asteroid implements IGameObject {
     private final String SPR_ASTEROID_TINY	 = "sprites/asteroid_tiny.png";
     private final String SPR_ASTEROID_MEDIUM = "sprites/asteroid_medium.png";
     private final String SPR_ASTEROID_LARGE	 = "sprites/asteroid_large.png";
+    private final String SND_EXPLOSION       = "audio/explosion.wav";
 
     private AsteroidType type;
     private Texture texTinyAsteroid;
@@ -26,6 +29,7 @@ public class Asteroid implements IGameObject {
     private Rectangle hitbox;
     private ScoreHandler scoreHandler;
     private Random random;
+    private Sound explosionSound;
     int hitboxAddition = 0;
 
     public Asteroid(GameObjectHandler objectHandler, AsteroidType type, ScoreHandler scoreHandler, Vector2 pos) {
@@ -33,6 +37,7 @@ public class Asteroid implements IGameObject {
         this.scoreHandler = scoreHandler;
         this.type = type;
         this.pos = pos;
+        explosionSound = Gdx.audio.newSound(Gdx.files.internal(SND_EXPLOSION));
 
         random = new Random();
         texTinyAsteroid   = new Texture(Gdx.files.internal(SPR_ASTEROID_TINY));
@@ -57,12 +62,12 @@ public class Asteroid implements IGameObject {
         hitboxAddition     = type == AsteroidType.TINY ? 20 : 10;
         hitbox             = new Rectangle(pos.x - (float) hitboxAddition / 2, pos.y - (float) hitboxAddition / 2, hitboxWidth + hitboxAddition, hitboxHeight + hitboxAddition);
 
-        objectHandler.addObject(this);
+        objectHandler.addAsteroid(this);
     }
     @Override
     public void update(float delta) {
 
-        if(hitbox.getX() != pos.x || hitbox.getY() != pos.y) {
+        if(hitbox.getX() - hitboxAddition / 2 != pos.x || hitbox.getY() != pos.y - hitboxAddition / 2) {
             hitbox.setX(pos.x - (float) hitboxAddition / 2);
             hitbox.setY(pos.y - (float) hitboxAddition / 2);
         }
@@ -82,6 +87,7 @@ public class Asteroid implements IGameObject {
         }
         Bullet collision = objectHandler.checkIfBulletColliding(hitbox);
         if(collision != null) {
+            explosionSound.play();
             switch (type) {
                 case LARGE:
                     int spawnAmountL = random.nextInt(1, 4);
@@ -98,10 +104,16 @@ public class Asteroid implements IGameObject {
                     dispose();
                     break;
                 case MEDIUM:
-                    int spawnAmountM = random.nextInt(0, 3);
-                    for(int j = 0; j < spawnAmountM; j++) {
-                        Vector2 newSpawnPosM = new Vector2(pos.x + random.nextInt(-12, 12), pos.y);
-                        new Asteroid(objectHandler, AsteroidType.TINY, scoreHandler, newSpawnPosM);
+                    int spawnAmountM = random.nextInt(0, 2);
+                    int[] diffsM = new int[4];
+                    for(int j = 0; j < 4; j++) {
+
+                        diffsM[j] = random.nextInt(-10, 10);
+
+                    }
+                    for(int i = 0; i < spawnAmountM; i++) {
+                        Vector2 newSpawnPosL = new Vector2(pos.x + diffsM[i], pos.y + diffsM[i]);
+                        new Asteroid(objectHandler, AsteroidType.TINY, scoreHandler, newSpawnPosL);
                     }
                     dispose();
                     break;
@@ -135,6 +147,10 @@ public class Asteroid implements IGameObject {
         texMediumAsteroid.dispose();
         texTinyAsteroid.dispose();
 
-        objectHandler.removeObject(this);
+        objectHandler.removeAsteroid(this);
+    }
+
+    public Rectangle getHitbox() {
+        return hitbox;
     }
 }

@@ -2,6 +2,8 @@ package me.aren.gbjam.interfaces;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import java.awt.*;
+
 public interface IGameObject {
 	public void update(float delta);
 	public void render(SpriteBatch sb);

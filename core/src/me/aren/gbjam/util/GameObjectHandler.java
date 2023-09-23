@@ -6,15 +6,18 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import com.badlogic.gdx.math.Rectangle;
 import me.aren.gbjam.interfaces.IGameObject;
+import me.aren.gbjam.objects.Asteroid;
 import me.aren.gbjam.objects.Bullet;
 
 public class GameObjectHandler {
 	private LinkedBlockingQueue<IGameObject> gameObjects;
 	private LinkedBlockingQueue<Bullet> bullets;
+	private LinkedBlockingQueue<Asteroid> asteroids;
 	
 	public GameObjectHandler() {
 		gameObjects = new LinkedBlockingQueue<IGameObject>();
 		bullets = new LinkedBlockingQueue<Bullet>();
+		asteroids = new LinkedBlockingQueue<Asteroid>();
 	}
 	
 	public void addObject(IGameObject obj) {
@@ -23,6 +26,26 @@ public class GameObjectHandler {
 	public void addBullet(Bullet bullet) {
 		gameObjects.add(bullet);
 		bullets.add(bullet);
+	}
+
+	public void addAsteroid(Asteroid asteroid) {
+		gameObjects.add(asteroid);
+		asteroids.add(asteroid);
+		System.out.println("Added asteroid");
+	}
+
+	
+	public void removeObject(IGameObject obj) {
+		gameObjects.remove(obj);
+	}
+	public void removeBullet(Bullet bullet) {
+		gameObjects.remove(bullet);
+		bullets.remove(bullet);
+	}
+
+	public void removeAsteroid(Asteroid asteroid) {
+		gameObjects.remove(asteroid);
+		asteroids.remove(asteroid);
 	}
 
 	public Bullet checkIfBulletColliding(Rectangle hitbox) {
@@ -34,13 +57,15 @@ public class GameObjectHandler {
 
 		return null;
 	}
-	
-	public void removeObject(IGameObject obj) {
-		gameObjects.remove(obj);
-	}
-	public void removeBullet(Bullet bullet) {
-		gameObjects.remove(bullet);
-		bullets.remove(bullet);
+
+	public Asteroid checkIfAsteroidColliding(Rectangle hitbox) {
+		for(Asteroid asteroid : asteroids) {
+			if(asteroid.getHitbox().contains(hitbox) || hitbox.contains(asteroid.getHitbox())) {
+				return asteroid;
+			}
+		}
+
+		return null;
 	}
 	
 	public void updateObjects(float delta) {
