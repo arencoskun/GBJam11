@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import me.aren.gbjam.interfaces.IGameObject;
+import me.aren.gbjam.util.GRandom;
 import me.aren.gbjam.util.GameObjectHandler;
 
 import java.util.Random;
@@ -36,7 +37,7 @@ public class Alien implements IGameObject {
     int hitNeeded = 3;
     private long lastHit = 0;
     private long time2 = 0;
-    private Random random;
+    private GRandom random;
 
 
     public Alien(GameObjectHandler objectHandler, Vector2 pos) {
@@ -48,7 +49,7 @@ public class Alien implements IGameObject {
         sndAlienBulletFired = Gdx.audio.newSound(Gdx.files.internal(SND_ALIEN_SHOT_FIRED));
         this.pos = pos;
         hitbox = new Rectangle(pos.x - 4, pos.y - 4, texAlien.getWidth() + 8, texAlien.getHeight() + 8);
-        random = new Random();
+        random = new GRandom();
         velocity.x = random.nextInt(0,2) == 0 ? 1 : -1;
         velocity.y = random.nextInt(0,2) == 0 ? 1 : -1;
         objectHandler.addObject(this);

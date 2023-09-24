@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import me.aren.gbjam.enums.AsteroidType;
 import me.aren.gbjam.interfaces.IGameObject;
+import me.aren.gbjam.util.GRandom;
 import me.aren.gbjam.util.GameObjectHandler;
 import me.aren.gbjam.util.ScoreHandler;
 
@@ -12,7 +13,7 @@ import java.util.Random;
 
 public class AsteroidSpawner implements IGameObject {
     private GameObjectHandler objectHandler;
-    private Random random;
+    private GRandom random;
     private long time = 0;
     private long lastSpawn = 0;
     private long spawnCooldown = 2000;
@@ -22,7 +23,7 @@ public class AsteroidSpawner implements IGameObject {
     public AsteroidSpawner(GameObjectHandler objectHandler, ScoreHandler scoreHandler) {
         this.objectHandler = objectHandler;
         this.scoreHandler = scoreHandler;
-        random = new Random();
+        random = new GRandom();
 
         objectHandler.addObject(this);
     }

@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import com.badlogic.gdx.math.Vector2;
 import me.aren.gbjam.interfaces.IGameObject;
+import me.aren.gbjam.util.GRandom;
 import me.aren.gbjam.util.GameObjectHandler;
 
 import java.util.Random;
@@ -15,7 +16,7 @@ public class Star implements IGameObject {
 	private final String SPR_STAR_1_PATH = "sprites/star_1.png";
 
 	private Texture starTexture;
-	private Random randomGen;
+	private GRandom randomGen;
 	private Vector2 pos;
 	private GameObjectHandler objectHandler;
 
@@ -23,7 +24,7 @@ public class Star implements IGameObject {
 		this.objectHandler = objectHandler;
 
 		starTexture = new Texture(Gdx.files.internal(SPR_STAR_1_PATH));
-		randomGen = new Random();
+		randomGen = new GRandom();
 		pos = new Vector2(randomGen.nextInt(4, 154), randomGen.nextInt(130, 140));
 		objectHandler.addObject(this);
 	}
