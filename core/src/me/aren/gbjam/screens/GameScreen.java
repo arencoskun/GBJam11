@@ -1,21 +1,24 @@
 package me.aren.gbjam.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import me.aren.gbjam.GBJamGame;
-import me.aren.gbjam.enums.AsteroidType;
 import me.aren.gbjam.objects.*;
 import me.aren.gbjam.util.GameObjectHandler;
+import me.aren.gbjam.util.GameStateHandler;
 import me.aren.gbjam.util.ScoreHandler;
+import me.aren.gbjam.util.cam.Rumble;
 
 public class GameScreen implements Screen {
 	
@@ -25,25 +28,22 @@ public class GameScreen implements Screen {
 	private final int SCALING_FACTOR_VIEWPORT                 = 4;
 	private final Color[] GB_COLOR_PALETTE                    = new Color[4];
 	private final String SPR_TILE_BLACK_PATH				  = "sprites/tile_black.png";
-	private final String SPR_ALIEN_HAPPY					  = "sprites/alien_happy.png";
-	private final String SPR_ALIEN_NEUTRAL					  = "sprites/alien_neutral.png";
-	private final String SPR_ALIEN_NOFACE					  = "sprites/alien_noface.png";
-	private final String SPR_ALIEN_PATTERN					  = "sprites/alien_pattern.png";
-	private final String SPR_ALIEN_SAD						  = "sprites/alien_sad.png";
 
 	private final int STAR_AMOUNT = 14;
 	
 	private Texture texTileBlack;
-	
 	private GameObjectHandler objHandler;
 	private ScoreHandler scoreHandler;
+	private GameStateHandler gameStateHandler;
 	private Spaceship spaceship;
+
+	private Music gameMusic;
 	
 	GBJamGame game;
 	SpriteBatch sb;
 	Viewport viewport;
 	OrthographicCamera cam;
-	
+
 	public GameScreen(GBJamGame game) {
 		cam 				= new OrthographicCamera();
 		viewport 			= new StretchViewport(GB_SCREEN_WIDTH*SCALING_FACTOR_VIEWPORT, GB_SCREEN_HEIGHT*SCALING_FACTOR_VIEWPORT, cam);
@@ -55,18 +55,24 @@ public class GameScreen implements Screen {
 		GB_COLOR_PALETTE[3] = new Color(30f/255f, 27f/255f, 27f/255f, 1f); // Black
 		
 		texTileBlack 		= new Texture(Gdx.files.internal(SPR_TILE_BLACK_PATH));
+		gameMusic = Gdx.audio.newMusic(Gdx.files.internal("audio/music/game_music_final.mp3"));
+		gameMusic.setVolume(.5f);
+		gameMusic.setLooping(true);
 
 		objHandler			= new GameObjectHandler();
 		scoreHandler		= new ScoreHandler();
+		gameStateHandler    = new GameStateHandler(game, scoreHandler);
 
 		for(int i = 0; i < STAR_AMOUNT; i++) {
 			new Star(objHandler);
 		}
-		spaceship 			= new Spaceship(objHandler, scoreHandler);
-		Asteroid rockTiny	= new Asteroid(objHandler, AsteroidType.TINY, new Vector2(10, 144));
-		Asteroid rockMedium	= new Asteroid(objHandler, AsteroidType.MEDIUM, new Vector2(50, 144));
-		Asteroid rockLarge	= new Asteroid(objHandler, AsteroidType.LARGE, new Vector2(100, 144));
+
+		spaceship 			= new Spaceship(objHandler, gameStateHandler);
+		// TODO: Move these up
 		ScoreText scoreText = new ScoreText(objHandler, scoreHandler);
+		AsteroidSpawner spawner	= new AsteroidSpawner(objHandler, scoreHandler);
+		AlienSpawner alienSpawner = new AlienSpawner(objHandler);
+		LivesBar livesBar = new LivesBar(objHandler, gameStateHandler);
 		
 		this.game 			= game;
 		this.sb 			= game.sb;
@@ -75,7 +81,7 @@ public class GameScreen implements Screen {
 	@Override
 	public void show() {
 		// TODO Auto-generated method stub
-		
+		gameMusic.play();
 	}
 	
 	private void drawBg() {
@@ -87,6 +93,9 @@ public class GameScreen implements Screen {
 	}
 	
 	private void update(float delta) {
+		if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+			gameStateHandler.returnToMainMenu();
+		}
 		objHandler.updateObjects(delta);
 	}
 
@@ -97,13 +106,20 @@ public class GameScreen implements Screen {
 		update(delta);
 		cam.update();
 		sb.setProjectionMatrix(cam.combined);
-		ScreenUtils.clear(0, 0, 0, 1);
+		ScreenUtils.clear(GB_COLOR_PALETTE[3]);
 		sb.begin();
+
 
 		drawBg();
 		
 		objHandler.drawObjects(sb);
-		
+		if (Rumble.getRumbleTimeLeft() > 0){
+			Rumble.tick(Gdx.graphics.getDeltaTime());
+			cam.translate(Rumble.getPos());
+		} else {
+			cam.position.x = 80;
+			cam.position.y = 72;
+		}
 		sb.end();
 	}
 
@@ -128,7 +144,7 @@ public class GameScreen implements Screen {
 	@Override
 	public void hide() {
 		// TODO Auto-generated method stub
-		
+		gameMusic.pause();
 	}
 
 	@Override
