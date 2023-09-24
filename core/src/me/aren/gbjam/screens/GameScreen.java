@@ -1,7 +1,9 @@
 package me.aren.gbjam.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -30,11 +32,12 @@ public class GameScreen implements Screen {
 	private final int STAR_AMOUNT = 14;
 	
 	private Texture texTileBlack;
-	
 	private GameObjectHandler objHandler;
 	private ScoreHandler scoreHandler;
 	private GameStateHandler gameStateHandler;
 	private Spaceship spaceship;
+
+	private Music gameMusic;
 	
 	GBJamGame game;
 	SpriteBatch sb;
@@ -52,10 +55,13 @@ public class GameScreen implements Screen {
 		GB_COLOR_PALETTE[3] = new Color(30f/255f, 27f/255f, 27f/255f, 1f); // Black
 		
 		texTileBlack 		= new Texture(Gdx.files.internal(SPR_TILE_BLACK_PATH));
+		gameMusic = Gdx.audio.newMusic(Gdx.files.internal("audio/music/game_music_final.mp3"));
+		gameMusic.setVolume(.5f);
+		gameMusic.setLooping(true);
 
 		objHandler			= new GameObjectHandler();
 		scoreHandler		= new ScoreHandler();
-		gameStateHandler    = new GameStateHandler(game);
+		gameStateHandler    = new GameStateHandler(game, scoreHandler);
 
 		for(int i = 0; i < STAR_AMOUNT; i++) {
 			new Star(objHandler);
@@ -75,7 +81,7 @@ public class GameScreen implements Screen {
 	@Override
 	public void show() {
 		// TODO Auto-generated method stub
-		
+		gameMusic.play();
 	}
 	
 	private void drawBg() {
@@ -87,6 +93,9 @@ public class GameScreen implements Screen {
 	}
 	
 	private void update(float delta) {
+		if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+			gameStateHandler.returnToMainMenu();
+		}
 		objHandler.updateObjects(delta);
 	}
 
@@ -135,7 +144,7 @@ public class GameScreen implements Screen {
 	@Override
 	public void hide() {
 		// TODO Auto-generated method stub
-		
+		gameMusic.pause();
 	}
 
 	@Override

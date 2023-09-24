@@ -98,6 +98,7 @@ public class TutorialScreen implements Screen {
 
 		this.game 			= game;
 		this.sb 			= game.sb;
+		gameStateHandler.setInTutorial(true);
 		//pressStartFont.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 	}
 
@@ -378,8 +379,8 @@ public class TutorialScreen implements Screen {
 			pressStartFont.draw(sb, "Press ENTER to", (160 - layout.width) / 2, 90);
 			layout.setText(pressStartFont, "play now or,");
 			pressStartFont.draw(sb, "play now or,", (160 - layout.width) / 2, 80);
-			layout.setText(pressStartFont, "press Z to");
-			pressStartFont.draw(sb, "press Z to", (160 - layout.width) / 2, 70);
+			layout.setText(pressStartFont, "press X to");
+			pressStartFont.draw(sb, "press X to", (160 - layout.width) / 2, 70);
 			layout.setText(pressStartFont, "return to the");
 			pressStartFont.draw(sb, "return to the", (160 - layout.width) / 2, 60);
 			layout.setText(pressStartFont, "main menu.");
@@ -392,10 +393,12 @@ public class TutorialScreen implements Screen {
 
 			if(Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
 				gameStateHandler.restartScreen();
+				gameStateHandler.setInTutorial(false);
 			}
 
-			if(Gdx.input.isKeyJustPressed(Input.Keys.Z)) {
-				Gdx.app.exit();
+			if(Gdx.input.isKeyJustPressed(Input.Keys.X)) {
+				gameStateHandler.returnToMainMenu();
+				gameStateHandler.setInTutorial(false);
 			}
 		}
 

@@ -24,7 +24,7 @@ public class LivesBar implements IGameObject {
 
     @Override
     public void update(float delta) {
-        if(gameStateHandler.getLives() == 0) gameStateHandler.restartScreen();
+        if(gameStateHandler.getLives() == 0) gameStateHandler.gameOver();
     }
 
     @Override
