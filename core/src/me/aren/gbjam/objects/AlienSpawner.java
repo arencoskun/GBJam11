@@ -2,15 +2,12 @@ package me.aren.gbjam.objects;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import me.aren.gbjam.enums.AsteroidType;
 import me.aren.gbjam.interfaces.IGameObject;
-import me.aren.gbjam.util.GRandom;
+import me.aren.gbjam.util.ARandom;
 import me.aren.gbjam.util.GameObjectHandler;
 
-import java.util.Random;
-
 public class AlienSpawner implements IGameObject {
-    private GRandom random;
+    private ARandom random;
     private GameObjectHandler objectHandler;
 
     private long time = 0;
@@ -18,7 +15,7 @@ public class AlienSpawner implements IGameObject {
     private long spawnCooldown = 5000;
 
     public AlienSpawner(GameObjectHandler objectHandler) {
-        random = new GRandom();
+        random = new ARandom();
         this.objectHandler = objectHandler;
 
         objectHandler.addObject(this);

@@ -25,7 +25,7 @@ public class GameScreen implements Screen {
 	private final int GB_SCREEN_WIDTH = 160, GB_SCREEN_HEIGHT = 144,
 					  GB_TILE_WIDTH   =   8, GB_TILE_HEIGHT   =   8,
 					  GB_PARRAY_WIDTH =  20, GB_PARRAY_HEIGHT =  18;
-	private final int SCALING_FACTOR_VIEWPORT                 = 4;
+	private final int SCALING_FACTOR_VIEWPORT                 = 6;
 	private final Color[] GB_COLOR_PALETTE                    = new Color[4];
 	private final String SPR_TILE_BLACK_PATH				  = "sprites/tile_black.png";
 
@@ -81,7 +81,7 @@ public class GameScreen implements Screen {
 	@Override
 	public void show() {
 		// TODO Auto-generated method stub
-		gameMusic.play();
+		if(game.settingsHandler.getBool("music")) gameMusic.play();
 	}
 	
 	private void drawBg() {

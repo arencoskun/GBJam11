@@ -4,16 +4,13 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import me.aren.gbjam.enums.AsteroidType;
 import me.aren.gbjam.interfaces.IGameObject;
-import me.aren.gbjam.util.GRandom;
+import me.aren.gbjam.util.ARandom;
 import me.aren.gbjam.util.GameObjectHandler;
 import me.aren.gbjam.util.ScoreHandler;
-
-import java.util.Random;
 
 public class Asteroid implements IGameObject {
     private final String SPR_ASTEROID_TINY	 = "sprites/asteroid_tiny.png";
@@ -29,7 +26,7 @@ public class Asteroid implements IGameObject {
     private Vector2 pos;
     private Rectangle hitbox;
     private ScoreHandler scoreHandler;
-    private GRandom random;
+    private ARandom random;
     private Sound explosionSound;
     int hitboxAddition = 0;
 
@@ -40,7 +37,7 @@ public class Asteroid implements IGameObject {
         this.pos = pos;
         explosionSound = Gdx.audio.newSound(Gdx.files.internal(SND_EXPLOSION));
 
-        random = new GRandom();
+        random = new ARandom();
         texTinyAsteroid   = new Texture(Gdx.files.internal(SPR_ASTEROID_TINY));
         texMediumAsteroid = new Texture(Gdx.files.internal(SPR_ASTEROID_MEDIUM));
         texLargeAsteroid  = new Texture(Gdx.files.internal(SPR_ASTEROID_LARGE));

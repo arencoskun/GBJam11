@@ -23,12 +23,13 @@ import me.aren.gbjam.ui.MainMenuEntry;
 import me.aren.gbjam.util.GameObjectHandler;
 import me.aren.gbjam.util.GameStateHandler;
 import me.aren.gbjam.util.ScoreHandler;
+import me.aren.gbjam.util.SettingsHandler;
 
 public class MainMenuScreen implements Screen {
     private final int GB_SCREEN_WIDTH = 160, GB_SCREEN_HEIGHT = 144,
             GB_TILE_WIDTH   =   8, GB_TILE_HEIGHT   =   8,
             GB_PARRAY_WIDTH =  20, GB_PARRAY_HEIGHT =  18;
-    private final int SCALING_FACTOR_VIEWPORT                 = 4;
+    private final int SCALING_FACTOR_VIEWPORT                 = 6;
     private final String SPR_TILE_BLACK_PATH				  = "sprites/tile_black.png";
     private final String SND_CLICK = "audio/click_1.wav";
     private final int STAR_AMOUNT = 30;
@@ -54,11 +55,15 @@ public class MainMenuScreen implements Screen {
 
     MainMenuEntry playEntry;
     MainMenuEntry tutorialEntry;
+    MainMenuEntry settingsEntry;
+    MainMenuEntry visitEntry;
     MainMenuEntry exitEntry;
 
     Music menuMusic;
+    SettingsHandler settingsHandler;
 
-    public MainMenuScreen(GBJamGame game) {
+    public MainMenuScreen(GBJamGame game, SettingsHandler settingsHandler) {
+        this.settingsHandler = settingsHandler;
         parameter.size = 8;
         pressStartFont = generator.generateFont(parameter); // font size 12 pixels
         layout = new GlyphLayout();
@@ -79,6 +84,8 @@ public class MainMenuScreen implements Screen {
 
         playEntry = new MainMenuEntry(game, "Play");
         tutorialEntry = new MainMenuEntry(game, "Tutorial");
+        settingsEntry = new MainMenuEntry(game, "Settings");
+        visitEntry = new MainMenuEntry(game, "More Games");
         exitEntry = new MainMenuEntry(game, "Exit");
 
         for(int i = 0; i < STAR_AMOUNT; i++) {
@@ -87,12 +94,11 @@ public class MainMenuScreen implements Screen {
 
         mainMenuEntries.add(playEntry);
         mainMenuEntries.add(tutorialEntry);
+        mainMenuEntries.add(settingsEntry);
+        mainMenuEntries.add(visitEntry);
         mainMenuEntries.add(exitEntry);
 
         playEntry.setSelected(true);
-        playEntry.setPos(new Vector2((160 - playEntry.getTextWidth()) / 2, (144 - playEntry.getTextHeight()) / 2 + 10));
-        tutorialEntry.setPos(new Vector2((160 - tutorialEntry.getTextWidth()) / 2, (144 - tutorialEntry.getTextHeight()) / 2));
-        exitEntry.setPos(new Vector2((160 - exitEntry.getTextWidth()) / 2, (144 - exitEntry.getTextHeight()) / 2 - 10));
 
         menuMusic = Gdx.audio.newMusic(Gdx.files.internal("audio/music/mainmenu_final.mp3"));
         menuMusic.setLooping(true);
@@ -109,14 +115,14 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void show() {
-        menuMusic.play();
+        if(settingsHandler.getBool("music")) menuMusic.play();
     }
 
     private void update(float delta) {
         objHandler.updateObjects(delta);
 
         if(Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
-            if(currentIndex < 2) {
+            if(currentIndex < mainMenuEntries.size - 1) {
                 mainMenuEntries.get(currentIndex).setSelected(false);
                 currentIndex++;
                 mainMenuEntries.get(currentIndex).setSelected(true);
@@ -134,22 +140,35 @@ public class MainMenuScreen implements Screen {
         }
 
         if(Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-            if(currentIndex == 0) {
-                game.setScreen(new GameScreen(game));
-            }
 
-            if(currentIndex == 1) {
-                game.setScreen(new TutorialScreen(game));
-            }
-
-            if(currentIndex == 2) {
-                Gdx.app.exit();
+            switch (currentIndex) {
+                case 0:
+                    game.setScreen(new GameScreen(game));
+                    break;
+                case 1:
+                    game.setScreen(new TutorialScreen(game));
+                    break;
+                case 2:
+                    game.setScreen(new SettingsScreen(game, settingsHandler, gameStateHandler));
+                    break;
+                case 3:
+                    Gdx.net.openURI("https://arencoskun.itch.io/");
+                    break;
+                case 4:
+                    Gdx.app.exit();
+                    break;
             }
         }
 
-        playEntry.setPos(new Vector2((160 - playEntry.getTextWidth()) / 2, (144 - playEntry.getTextHeight()) / 2 + 10));
-        tutorialEntry.setPos(new Vector2((160 - tutorialEntry.getTextWidth()) / 2, (144 - tutorialEntry.getTextHeight()) / 2));
-        exitEntry.setPos(new Vector2((160 - exitEntry.getTextWidth()) / 2, (144 - exitEntry.getTextHeight()) / 2 - 10));
+        for(MainMenuEntry mainMenuEntry : mainMenuEntries) {
+            int i = mainMenuEntries.indexOf(mainMenuEntry, false);
+            int l = mainMenuEntries.size;
+            int half = (l - 1) / 2;
+            int distanceMid = half - i;
+            int difference = distanceMid * 10;
+
+            mainMenuEntry.setPos(new Vector2((160 - mainMenuEntry.getTextWidth()) / 2, (144 - mainMenuEntry.getTextHeight()) / 2 + difference));
+        }
     }
 
     @Override
@@ -169,6 +188,8 @@ public class MainMenuScreen implements Screen {
 
         layout.setText(pressStartFont, "Made for GBJam11");
         pressStartFont.draw(sb, "Made for GBJam11", (160 - layout.width) / 2, 20);
+        layout.setText(pressStartFont, GBJamGame.VERSION_STRING);
+        pressStartFont.draw(sb, GBJamGame.VERSION_STRING, (160 - layout.width) / 2, 10);
         sb.end();
     }
 

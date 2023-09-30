@@ -2,10 +2,10 @@ package me.aren.gbjam.util;
 
 import java.util.Random;
 
-public class GRandom {
+public class ARandom {
     private Random random;
 
-    public GRandom() {
+    public ARandom() {
         random = new Random();
     }
 

@@ -37,7 +37,7 @@ public class GameStateHandler {
     }
 
     public void returnToMainMenu() {
-        game.setScreen(new MainMenuScreen(game));
+        game.setScreen(new MainMenuScreen(game, game.settingsHandler));
     }
 
     public void gameOver() {

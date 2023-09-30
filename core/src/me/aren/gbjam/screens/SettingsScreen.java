@@ -10,14 +10,19 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import me.aren.gbjam.GBJamGame;
+import me.aren.gbjam.interfaces.ISettingsEntry;
+import me.aren.gbjam.ui.ToggleEntry;
 import me.aren.gbjam.util.GameStateHandler;
 import me.aren.gbjam.util.ScoreHandler;
+import me.aren.gbjam.util.SettingsHandler;
 
-public class GameOverScreen implements Screen {
+public class SettingsScreen implements Screen {
     private SpriteBatch sb;
 
     private final int GB_SCREEN_WIDTH = 160, GB_SCREEN_HEIGHT = 144,
@@ -27,6 +32,7 @@ public class GameOverScreen implements Screen {
     private final String SPR_TILE_BLACK_PATH				  = "sprites/tile_black.png";
 
     private Texture texTileBlack;
+    private Array<ISettingsEntry> settingsEntries;
 
     Viewport viewport;
     OrthographicCamera cam;
@@ -35,21 +41,34 @@ public class GameOverScreen implements Screen {
     FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
     BitmapFont pressStartFont;
     GlyphLayout layout;
-    ScoreHandler scoreHandler;
+
+    ToggleEntry testToggle;
+    ToggleEntry musicToggle;
     GameStateHandler gameStateHandler;
 
-    public GameOverScreen(GBJamGame game, ScoreHandler scoreHandler, GameStateHandler gameStateHandler) {
-        this.scoreHandler = scoreHandler;
-        this.gameStateHandler = gameStateHandler;
+    public SettingsScreen(GBJamGame game, SettingsHandler settingsHandler, GameStateHandler gameStateHandler) {
         parameter.size = 8;
         pressStartFont = generator.generateFont(parameter); // font size 12 pixels
         layout = new GlyphLayout();
         layout.setText(pressStartFont, "");
         texTileBlack = new Texture(SPR_TILE_BLACK_PATH);
 
+        this.gameStateHandler = gameStateHandler;
+
         cam 				= new OrthographicCamera();
         viewport 			= new StretchViewport(GB_SCREEN_WIDTH*SCALING_FACTOR_VIEWPORT, GB_SCREEN_HEIGHT*SCALING_FACTOR_VIEWPORT, cam);
         cam.setToOrtho(false, GB_SCREEN_WIDTH, GB_SCREEN_HEIGHT);
+        settingsEntries = new Array<ISettingsEntry>();
+        testToggle = new ToggleEntry(game, "Test Toggle", "test-toggle", settingsHandler);
+        testToggle.setPos(110);
+
+        musicToggle = new ToggleEntry(game, "Music", "music", settingsHandler);
+        musicToggle.setPos(100);
+        musicToggle.setSelected(true);
+
+        settingsEntries.add(testToggle);
+        settingsEntries.add(musicToggle);
+
         this.sb = game.sb;
     }
 
@@ -63,14 +82,10 @@ public class GameOverScreen implements Screen {
 
     @Override
     public void show() {
-        scoreHandler.setHighscore(scoreHandler.getScore());
+
     }
 
     private void update(float delta) {
-        if(Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-            gameStateHandler.restartScreen();
-        }
-
         if(Gdx.input.isKeyJustPressed(Input.Keys.X)) {
             gameStateHandler.returnToMainMenu();
         }
@@ -84,28 +99,10 @@ public class GameOverScreen implements Screen {
 
         sb.begin();
         drawBg();
-
-        layout.setText(pressStartFont, "Game Over!");
-        pressStartFont.draw(sb, "Game Over!", (160 - layout.width) / 2, 130);
-        layout.setText(pressStartFont, "Press ENTER to");
-        pressStartFont.draw(sb, "Press ENTER to", (160 - layout.width) / 2, 100);
-        layout.setText(pressStartFont, "try again or");
-        pressStartFont.draw(sb, "try again or", (160 - layout.width) / 2, 90);
-        layout.setText(pressStartFont, "press X to");
-        pressStartFont.draw(sb, "press X to", (160 - layout.width) / 2, 80);
-        layout.setText(pressStartFont, "return to the");
-        pressStartFont.draw(sb, "return to the", (160 - layout.width) / 2, 70);
-        layout.setText(pressStartFont, "main menu.");
-        pressStartFont.draw(sb, "main menu.", (160 - layout.width) / 2, 60);
-
-        layout.setText(pressStartFont, "Your score:");
-        pressStartFont.draw(sb, "Your score:", (160 - layout.width) / 2, 40);
-        layout.setText(pressStartFont, scoreHandler.getScoreString());
-        pressStartFont.draw(sb, scoreHandler.getScoreString(), (160 - layout.width) / 2, 30);
-        layout.setText(pressStartFont, "Your highscore:");
-        pressStartFont.draw(sb, "Your highscore:", (160 - layout.width) / 2, 20);
-        layout.setText(pressStartFont, scoreHandler.getHighScoreString());
-        pressStartFont.draw(sb, scoreHandler.getHighScoreString(), (160 - layout.width) / 2, 10);
+        testToggle.render();
+        musicToggle.render();
+        layout.setText(pressStartFont, "Settings");
+        pressStartFont.draw(sb, "Settings", (160 - layout.width) / 2, 130);
         sb.end();
     }
 
