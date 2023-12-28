@@ -11,6 +11,7 @@ import me.aren.gbjam.interfaces.IGameObject;
 import me.aren.gbjam.util.ARandom;
 import me.aren.gbjam.util.GameObjectHandler;
 import me.aren.gbjam.util.ScoreHandler;
+import me.aren.gbjam.util.SettingsHandler;
 
 public class Asteroid implements IGameObject {
     private final String SPR_ASTEROID_TINY	 = "sprites/asteroid_tiny.png";
@@ -29,10 +30,12 @@ public class Asteroid implements IGameObject {
     private ARandom random;
     private Sound explosionSound;
     int hitboxAddition = 0;
+    private SettingsHandler settingsHandler;
 
-    public Asteroid(GameObjectHandler objectHandler, AsteroidType type, ScoreHandler scoreHandler, Vector2 pos) {
+    public Asteroid(GameObjectHandler objectHandler, AsteroidType type, ScoreHandler scoreHandler, SettingsHandler settingsHandler, Vector2 pos) {
         this.objectHandler = objectHandler;
         this.scoreHandler = scoreHandler;
+        this.settingsHandler = settingsHandler;
         this.type = type;
         this.pos = pos;
         explosionSound = Gdx.audio.newSound(Gdx.files.internal(SND_EXPLOSION));
@@ -85,7 +88,7 @@ public class Asteroid implements IGameObject {
         }
         Bullet collision = objectHandler.checkIfBulletColliding(hitbox);
         if(collision != null) {
-            explosionSound.play();
+            if(settingsHandler.getBool("sound")) explosionSound.play();
             switch (type) {
                 case LARGE:
                     int spawnAmountL = random.nextInt(1, 4);
@@ -97,7 +100,7 @@ public class Asteroid implements IGameObject {
                     }
                     for(int i = 0; i < spawnAmountL; i++) {
                         Vector2 newSpawnPosL = new Vector2(pos.x + diffs[i], pos.y + diffs[i]);
-                        new Asteroid(objectHandler, AsteroidType.MEDIUM, scoreHandler, newSpawnPosL);
+                        new Asteroid(objectHandler, AsteroidType.MEDIUM, scoreHandler, settingsHandler, newSpawnPosL);
                     }
                     dispose();
                     break;
@@ -111,7 +114,7 @@ public class Asteroid implements IGameObject {
                     }
                     for(int i = 0; i < spawnAmountM; i++) {
                         Vector2 newSpawnPosL = new Vector2(pos.x + diffsM[i], pos.y + diffsM[i]);
-                        new Asteroid(objectHandler, AsteroidType.TINY, scoreHandler, newSpawnPosL);
+                        new Asteroid(objectHandler, AsteroidType.TINY, scoreHandler, settingsHandler, newSpawnPosL);
                     }
                     dispose();
                     break;

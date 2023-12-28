@@ -13,6 +13,7 @@ import me.aren.gbjam.interfaces.IGameObject;
 import me.aren.gbjam.util.GameObjectHandler;
 import me.aren.gbjam.util.GameStateHandler;
 import me.aren.gbjam.util.ScoreHandler;
+import me.aren.gbjam.util.SettingsHandler;
 import me.aren.gbjam.util.cam.Rumble;
 
 public class Spaceship implements IGameObject {
@@ -39,8 +40,9 @@ public class Spaceship implements IGameObject {
 	private long lastRemove = 0;
 	private long deathCooldown = 2000;
 	private Sound sndDeathExplosion;
+	private SettingsHandler settingsHandler;
 	
-	public Spaceship(GameObjectHandler objHandler, GameStateHandler gameStateHandler) {
+	public Spaceship(GameObjectHandler objHandler, GameStateHandler gameStateHandler, SettingsHandler settingsHandler) {
 		// TODO Auto-generated constructor stub
 		texSpaceshipPowered = new Texture(Gdx.files.internal(SPR_SPACESHIP_POWERED_PATH));
 		sndCantShoot		= Gdx.audio.newSound(Gdx.files.internal(SND_CANT_SHOOT));
@@ -48,6 +50,7 @@ public class Spaceship implements IGameObject {
 		sndDeathExplosion   = Gdx.audio.newSound(Gdx.files.internal(SND_DEATH_EXPLOSION));
 		this.objHandler 	= objHandler;
 		this.gameStateHandler = gameStateHandler;
+		this.settingsHandler = settingsHandler;
 		pos					= new Vector2((160 / 2) - 8, 4);
 		hitbox				= new Rectangle(pos.x, pos.y, texSpaceshipPowered.getWidth(), texSpaceshipPowered.getHeight());
 		objHandler.addObject(this);
@@ -81,10 +84,10 @@ public class Spaceship implements IGameObject {
 			new Bullet(new Vector2(pos.x + 4, pos.y + 10), objHandler, false);
 			lastShoot = System.currentTimeMillis();
 			canShoot = false;
-			sndShoot.play();
+			if(settingsHandler.getBool("sound")) sndShoot.play();
 		}
 		if(Gdx.input.isKeyJustPressed(Keys.Z) && !canShoot && time - lastShoot > 100) {
-			sndCantShoot.play();
+			if(settingsHandler.getBool("sound")) sndCantShoot.play();
 		}
 
 		Asteroid collisionAsteroid = objHandler.checkIfAsteroidColliding(hitbox);
@@ -95,14 +98,14 @@ public class Spaceship implements IGameObject {
 				gameStateHandler.removeLive();
 				lastRemove = System.currentTimeMillis();
 				Rumble.rumble(1, .2f);
-				sndDeathExplosion.play();
+				if(settingsHandler.getBool("sound")) sndDeathExplosion.play();
 			}
 
 			if (collisionBullet != null && time - lastRemove > 100) {
 				gameStateHandler.removeLive();
 				lastRemove = System.currentTimeMillis();
 				Rumble.rumble(1, .2f);
-				sndDeathExplosion.play();
+				if(settingsHandler.getBool("sound")) sndDeathExplosion.play();
 			}
 		}
 	}

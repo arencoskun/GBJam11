@@ -67,11 +67,11 @@ public class GameScreen implements Screen {
 			new Star(objHandler);
 		}
 
-		spaceship 			= new Spaceship(objHandler, gameStateHandler);
+		spaceship 			= new Spaceship(objHandler, gameStateHandler, game.settingsHandler);
 		// TODO: Move these up
 		ScoreText scoreText = new ScoreText(objHandler, scoreHandler);
-		AsteroidSpawner spawner	= new AsteroidSpawner(objHandler, scoreHandler);
-		AlienSpawner alienSpawner = new AlienSpawner(objHandler);
+		AsteroidSpawner spawner	= new AsteroidSpawner(objHandler, scoreHandler, game.settingsHandler);
+		AlienSpawner alienSpawner = new AlienSpawner(objHandler, game.settingsHandler);
 		LivesBar livesBar = new LivesBar(objHandler, gameStateHandler);
 		
 		this.game 			= game;

@@ -3,6 +3,7 @@ package me.aren.gbjam.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -30,6 +31,7 @@ public class SettingsScreen implements Screen {
             GB_PARRAY_WIDTH =  20, GB_PARRAY_HEIGHT =  18;
     private final int SCALING_FACTOR_VIEWPORT                 = 6;
     private final String SPR_TILE_BLACK_PATH				  = "sprites/tile_black.png";
+    private final String SND_CLICK = "audio/click_1.wav";
 
     private Texture texTileBlack;
     private Array<ISettingsEntry> settingsEntries;
@@ -44,7 +46,11 @@ public class SettingsScreen implements Screen {
 
     ToggleEntry testToggle;
     ToggleEntry musicToggle;
+    ToggleEntry soundToggle;
     GameStateHandler gameStateHandler;
+    private int currentIndex = 0;
+    private Sound clickSound;
+    private SettingsHandler settingsHandler;
 
     public SettingsScreen(GBJamGame game, SettingsHandler settingsHandler, GameStateHandler gameStateHandler) {
         parameter.size = 8;
@@ -52,7 +58,7 @@ public class SettingsScreen implements Screen {
         layout = new GlyphLayout();
         layout.setText(pressStartFont, "");
         texTileBlack = new Texture(SPR_TILE_BLACK_PATH);
-
+        this.settingsHandler = settingsHandler;
         this.gameStateHandler = gameStateHandler;
 
         cam 				= new OrthographicCamera();
@@ -64,10 +70,17 @@ public class SettingsScreen implements Screen {
 
         musicToggle = new ToggleEntry(game, "Music", "music", settingsHandler);
         musicToggle.setPos(100);
-        musicToggle.setSelected(true);
+
+        soundToggle = new ToggleEntry(game, "Sound", "sound", settingsHandler);
+        soundToggle.setPos(90);
 
         settingsEntries.add(testToggle);
         settingsEntries.add(musicToggle);
+        settingsEntries.add(soundToggle);
+
+        settingsEntries.get(currentIndex).setSelected(true);
+
+        clickSound = Gdx.audio.newSound(Gdx.files.internal(SND_CLICK));
 
         this.sb = game.sb;
     }
@@ -89,6 +102,24 @@ public class SettingsScreen implements Screen {
         if(Gdx.input.isKeyJustPressed(Input.Keys.X)) {
             gameStateHandler.returnToMainMenu();
         }
+
+        if(Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
+            if(currentIndex > 0) {
+                settingsEntries.get(currentIndex).setSelected(false);
+                currentIndex -= 1;
+                settingsEntries.get(currentIndex).setSelected(true);
+            }
+            if(settingsHandler.getBool("sound")) clickSound.play();
+        }
+
+        if(Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
+            if(currentIndex < settingsEntries.size - 1) {
+                settingsEntries.get(currentIndex).setSelected(false);
+                currentIndex += 1;
+                settingsEntries.get(currentIndex).setSelected(true);
+            }
+            if(settingsHandler.getBool("sound")) clickSound.play();
+        }
     }
 
     @Override
@@ -99,8 +130,9 @@ public class SettingsScreen implements Screen {
 
         sb.begin();
         drawBg();
-        testToggle.render();
-        musicToggle.render();
+        for(ISettingsEntry settingsEntry : settingsEntries) {
+            settingsEntry.render();
+        }
         layout.setText(pressStartFont, "Settings");
         pressStartFont.draw(sb, "Settings", (160 - layout.width) / 2, 130);
         sb.end();

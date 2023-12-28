@@ -9,6 +9,7 @@ import me.aren.gbjam.interfaces.IGameObject;
 import me.aren.gbjam.objects.Bullet;
 import me.aren.gbjam.util.GameObjectHandler;
 import com.badlogic.gdx.audio.Sound;
+import me.aren.gbjam.util.SettingsHandler;
 
 public class TutorialAlien implements IGameObject {
     private final String SPR_ALIEN_HAPPY = "sprites/alien_happy.png";
@@ -21,10 +22,12 @@ public class TutorialAlien implements IGameObject {
     private Rectangle hitbox;
     private Sound sndAlienShot;
     private boolean bulletHit = false;
+    private SettingsHandler settingsHandler;
 
-    public TutorialAlien(GameObjectHandler objectHandler, Vector2 pos) {
+    public TutorialAlien(GameObjectHandler objectHandler, SettingsHandler settingsHandler, Vector2 pos) {
         this.objectHandler = objectHandler;
         this.pos = pos;
+        this.settingsHandler = settingsHandler;
         texAlien = new Texture(Gdx.files.internal(SPR_ALIEN_HAPPY));
         hitbox = new Rectangle(pos.x - 4, pos.y - 4, texAlien.getWidth() + 8, texAlien.getHeight() + 8);
         sndAlienShot = Gdx.audio.newSound(Gdx.files.internal(SND_ALIEN_SHOT));
@@ -38,7 +41,7 @@ public class TutorialAlien implements IGameObject {
         Bullet collisionBullet = objectHandler.checkIfBulletColliding(hitbox);
 
         if(collisionBullet != null) {
-            sndAlienShot.play();
+            if(settingsHandler.getBool("sound")) sndAlienShot.play();
             objectHandler.removeBullet(collisionBullet);
             bulletHit = true;
             texAlien = new Texture(Gdx.files.internal(SPR_ALIEN_SAD));

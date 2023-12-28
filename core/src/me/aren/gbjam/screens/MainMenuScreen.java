@@ -126,7 +126,7 @@ public class MainMenuScreen implements Screen {
                 mainMenuEntries.get(currentIndex).setSelected(false);
                 currentIndex++;
                 mainMenuEntries.get(currentIndex).setSelected(true);
-                clickSound.play();
+                if(settingsHandler.getBool("sound")) clickSound.play();
             }
         }
 
@@ -135,7 +135,7 @@ public class MainMenuScreen implements Screen {
                 mainMenuEntries.get(currentIndex).setSelected(false);
                 currentIndex--;
                 mainMenuEntries.get(currentIndex).setSelected(true);
-                clickSound.play();
+                if(settingsHandler.getBool("sound")) clickSound.play();
             }
         }
 

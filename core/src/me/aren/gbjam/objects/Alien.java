@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 import me.aren.gbjam.interfaces.IGameObject;
 import me.aren.gbjam.util.ARandom;
 import me.aren.gbjam.util.GameObjectHandler;
+import me.aren.gbjam.util.SettingsHandler;
 
 public class Alien implements IGameObject {
     private final String SPR_ALIEN_HAPPY					  = "sprites/alien_happy.png";
@@ -33,13 +34,14 @@ public class Alien implements IGameObject {
     int hitNumber = 0;
     int hitNeeded = 3;
     private long lastHit = 0;
-    private long time2 = 0;
     private ARandom random;
+    private SettingsHandler settingsHandler;
 
 
-    public Alien(GameObjectHandler objectHandler, Vector2 pos) {
+    public Alien(GameObjectHandler objectHandler, SettingsHandler settingsHandler, Vector2 pos) {
         this.objectHandler = objectHandler;
         this.pos = pos;
+        this.settingsHandler = settingsHandler;
 
         texAlien = new Texture(Gdx.files.internal(SPR_ALIEN_HAPPY));
         sndAlienShot = Gdx.audio.newSound(Gdx.files.internal(SND_ALIEN_SHOT));
@@ -63,7 +65,7 @@ public class Alien implements IGameObject {
         new Bullet(new Vector2(pos.x + 4, pos.y - 5), objectHandler, true);
         new Bullet(new Vector2(pos.x - 12, pos.y - 5), objectHandler, true);
         new Bullet(new Vector2(pos.x + 20, pos.y - 5), objectHandler, true);
-        sndAlienBulletFired.play();
+        if(settingsHandler.getBool("sound")) sndAlienBulletFired.play();
         lastSpawn = System.currentTimeMillis();
     }
 
@@ -99,7 +101,7 @@ public class Alien implements IGameObject {
         if(collisionBullet != null) {
             if(!collisionBullet.isEnemy()) {
                 hitNumber++;
-                sndAlienShot.play();
+                if(settingsHandler.getBool("sound")) sndAlienShot.play();
                 texAlien = new Texture(Gdx.files.internal(SPR_ALIEN_PATTERN));
                 lastHit = System.currentTimeMillis();
                 objectHandler.removeBullet(collisionBullet);

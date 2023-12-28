@@ -176,7 +176,7 @@ public class TutorialScreen implements Screen {
 			if(pressedRight && pressedLeft) {
 				objHandler.setPause(true);
 				if(!stage1CongratsPlayed) {
-					sndCongrats.play();
+					if(game.settingsHandler.getBool("sound")) sndCongrats.play();
 					stage1CongratsPlayed = true;
 				}
 				layout.setText(pressStartFont, "Congrats!");
@@ -188,7 +188,7 @@ public class TutorialScreen implements Screen {
 			}
 
 			if(spaceship == null) {
-				spaceship = new Spaceship(objHandler, gameStateHandler);
+				spaceship = new Spaceship(objHandler, gameStateHandler, game.settingsHandler);
 			}
 
 			if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
@@ -206,7 +206,7 @@ public class TutorialScreen implements Screen {
 
 		if(tutorialStage == 2) {
 			objHandler.setPause(false);
-			if(tutorialAlien == null) tutorialAlien = new TutorialAlien(objHandler, new Vector2(72, 72));
+			if(tutorialAlien == null) tutorialAlien = new TutorialAlien(objHandler, game.settingsHandler, new Vector2(72, 72));
 			layout.setText(pressStartFont, "Press Z to");
 			pressStartFont.draw(sb, "Press Z to", (160 - layout.width) / 2, 130);
 			layout.setText(pressStartFont, "shoot.");
@@ -231,7 +231,7 @@ public class TutorialScreen implements Screen {
 		}
 
 		if(tutorialStage == 3) {
-			if(tutorialAsteroid == null) tutorialAsteroid = new TutorialAsteroid(objHandler, new Vector2(80-16, 64));
+			if(tutorialAsteroid == null) tutorialAsteroid = new TutorialAsteroid(objHandler, game.settingsHandler, new Vector2(80-16, 64));
 			objHandler.setPause(false);
 
 			layout.setText(pressStartFont, "Shoot rocks to");
@@ -314,10 +314,10 @@ public class TutorialScreen implements Screen {
 
 			if(stage5Started) {
 				objHandler.setPause(false);
-				spaceship 			= new Spaceship(objHandler, gameStateHandler);
+				spaceship 			= new Spaceship(objHandler, gameStateHandler, game.settingsHandler);
 				scoreText = new ScoreText(objHandler, scoreHandler);
-				spawner	= new AsteroidSpawner(objHandler, scoreHandler);
-				alienSpawner = new AlienSpawner(objHandler);
+				spawner	= new AsteroidSpawner(objHandler, scoreHandler, game.settingsHandler);
+				alienSpawner = new AlienSpawner(objHandler, game.settingsHandler);
 				LivesBar livesBar = new LivesBar(objHandler, gameStateHandler);
 				for(int i = 0; i < STAR_AMOUNT; i++) {
 					new Star(objHandler);
@@ -339,7 +339,7 @@ public class TutorialScreen implements Screen {
 				objHandler.setPause(true);
 				objHandler.removeAllObjects();
 				if(!stage5CongratsPlayed) {
-					sndCongrats.play();
+					if(game.settingsHandler.getBool("sound")) sndCongrats.play();
 					stage5CongratsPlayed = true;
 				}
 				tutorialStage = 55;

@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 import me.aren.gbjam.interfaces.IGameObject;
 import me.aren.gbjam.objects.Bullet;
 import me.aren.gbjam.util.GameObjectHandler;
+import me.aren.gbjam.util.SettingsHandler;
 
 public class TutorialAsteroid implements IGameObject {
     private final String SPR_ASTEROID_LARGE	 = "sprites/asteroid_large.png";
@@ -21,10 +22,12 @@ public class TutorialAsteroid implements IGameObject {
     private Rectangle hitbox;
     private Sound explosionSound;
     private boolean isBulletHit;
+    private SettingsHandler settingsHandler;
 
-    public TutorialAsteroid(GameObjectHandler objectHandler, Vector2 pos) {
+    public TutorialAsteroid(GameObjectHandler objectHandler, SettingsHandler settingsHandler, Vector2 pos) {
         this.objectHandler = objectHandler;
         this.pos = pos;
+        this.settingsHandler = settingsHandler;
 
         texLargeAsteroid = new Texture(Gdx.files.internal(SPR_ASTEROID_LARGE));
         int hitboxWidth = texLargeAsteroid.getWidth();
@@ -41,7 +44,7 @@ public class TutorialAsteroid implements IGameObject {
 
         if(collision != null) {
             isBulletHit = true;
-            explosionSound.play();
+            if(settingsHandler.getBool("sound")) explosionSound.play();
             objectHandler.removeObject(collision);
         }
     }

@@ -47,7 +47,7 @@ public class ToggleEntry implements ISettingsEntry {
         if(Gdx.input.isKeyJustPressed(Input.Keys.Z) && selected) {
             value = !value;
             settingsHandler.setBool(key, value);
-            clickSound.play();
+            if(settingsHandler.getBool("sound")) clickSound.play();
         }
     }
 
